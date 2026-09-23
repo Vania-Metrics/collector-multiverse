@@ -10,71 +10,71 @@ import fr.samflix.vaniametrics.api.Collector;
 import fr.samflix.vaniametrics.api.Gauge;
 import fr.samflix.vaniametrics.api.MetricRegistry;
 
-/** Le relevé Multiverse. */
+/** The Multiverse collector. */
 public final class MultiverseCollector implements Collector {
 
-	private Gauge mondes;
-	private Gauge charge;
+	private Gauge worlds;
+	private Gauge loaded;
 	private Gauge info;
 
 	@Override
-	public String nom() {
+	public String name() {
 		return "multiverse";
 	}
 
 	@Override
-	public String origine() {
+	public String source() {
 		return "Multiverse-Core";
 	}
 
 	@Override
-	public boolean filPrincipal() {
+	public boolean needsMainThread() {
 		return true;
 	}
 
 	@Override
-	public void declarer(MetricRegistry r) {
-		mondes = r.gauge("multiverse_worlds",
-				"Mondes déclarés dans Multiverse. state = loaded|unloaded.", "state");
-		charge = r.gauge("multiverse_world_loaded",
-				"1 si le monde est chargé, 0 s'il est déclaré mais absent de la mémoire. "
-						+ "Un monde qu'on croyait chargé et qui ne l'est pas est une panne muette.",
+	public void declare(MetricRegistry r) {
+		worlds = r.gauge("multiverse_worlds",
+				"Worlds declared in Multiverse. state = loaded|unloaded.", "state");
+		loaded = r.gauge("multiverse_world_loaded",
+				"1 if the world is loaded, 0 if it is declared but absent from memory. "
+						+ "A world thought to be loaded that isn't is a silent outage.",
 				"world");
 		info = r.gauge("multiverse_world_info",
-				"Toujours 1. Les caractéristiques du monde sont dans les étiquettes.",
+				"Always 1. The world's characteristics are in the labels.",
 				"world", "alias", "environment", "difficulty");
 	}
 
 	@Override
-	public void relever(MetricRegistry r) {
+	public void collect(MetricRegistry r) {
 		if (!MultiverseCoreApi.isLoaded()) {
 			return;
 		}
-		WorldManager gestionnaire = MultiverseCoreApi.get().getWorldManager();
+		WorldManager worldManager = MultiverseCoreApi.get().getWorldManager();
 
-		// Les mondes se créent et se suppriment en jeu : sans remise à zéro, un monde supprimé
-		// resterait publié pour toujours.
-		charge.clear();
+		// Worlds are created and deleted in-game: without resetting, a deleted world
+		// would stay published forever.
+		loaded.clear();
 		info.clear();
 
-		int charges = 0;
-		int decharges = 0;
-		for (MultiverseWorld monde : gestionnaire.getWorlds()) {
-			boolean present = monde.isLoaded();
+		int loadedCount = 0;
+		int unloadedCount = 0;
+		for (MultiverseWorld world : worldManager.getWorlds()) {
+			boolean present = world.isLoaded();
 			if (present) {
-				charges++;
+				loadedCount++;
 			} else {
-				decharges++;
+				unloadedCount++;
 			}
-			charge.set(present ? 1 : 0, monde.getName());
-			info.set(1, monde.getName(), texte(monde.getAlias()),
-					enumeration(monde.getEnvironment()), enumeration(monde.getDifficulty()));
+			loaded.set(present ? 1 : 0, world.getName());
+			info.set(1, world.getName(), text(world.getAlias()),
+					enumeration(world.getEnvironment()), enumeration(world.getDifficulty()));
 		}
-		mondes.set(charges, "loaded");
-		mondes.set(decharges, "unloaded");
+		worlds.set(loadedCount, "loaded");
+		worlds.set(unloadedCount, "unloaded");
 	}
 
-	private static String texte(String v) {
+	private static String text(String v) {
 		return v == null || v.isBlank() ? "" : v;
 	}
 

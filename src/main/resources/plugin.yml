@@ -1,13 +1,13 @@
-# Métriques Multiverse : inventaire des mondes, chargés ou non.
+# Multiverse metrics: inventory of worlds, loaded or not.
 #
-# UN JAR, UNE INTÉGRATION. Le retirer retire ces métriques et rien d'autre ; s'il
-# plante, il plante seul. C'est ce que « depend » rend vrai : sans le noyau ou sans
-# Multiverse-Core, Bukkit ne charge pas ce plugin et le dit clairement, au lieu
-# de laisser un collecteur échouer en silence à chaque scrape.
+# One jar, one integration. Removing it removes these metrics and nothing else;
+# if it crashes, it crashes alone. That's what "depend" guarantees: without the
+# core or without Multiverse-Core, Bukkit won't load this plugin, and says so
+# clearly, instead of letting a collector fail silently on every scrape.
 name: VaniaMetrics-Multiverse
 version: ${version}
 main: fr.samflix.vaniametrics.module.multiverse.MultiversePaper
 api-version: '1.21'
 authors: [mc-vania]
-description: "Métriques Multiverse : inventaire des mondes, chargés ou non."
+description: "Multiverse metrics: inventory of worlds, loaded or not."
 depend: [VaniaMetrics, Multiverse-Core]

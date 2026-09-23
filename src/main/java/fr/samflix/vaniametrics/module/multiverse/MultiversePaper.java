@@ -7,30 +7,32 @@ import fr.samflix.vaniametrics.api.VaniaMetrics;
 import fr.samflix.vaniametrics.api.VaniaMetricsProvider;
 
 /**
- * Multiverse-Core — l'inventaire des mondes, chargés ou non.
+ * Multiverse-Core — the inventory of worlds, loaded or not.
  *
- * <p>Bukkit.getWorlds() ne rend que les mondes CHARGÉS : un monde déchargé, pour Bukkit, n'existe pas. Multiverse tient le registre complet, et c'est cette différence qui intéresse.
+ * <p>Bukkit.getWorlds() only returns LOADED worlds: an unloaded world, as far as Bukkit is
+ * concerned, doesn't exist. Multiverse keeps the full registry, and that difference is what
+ * matters here.
  *
- * <p>SON plugin.yml DÉCLARE {@code depend: [VaniaMetrics, Multiverse-Core]} : les deux sont
- * indispensables, et le déclarer laisse Bukkit garantir l'ordre de chargement plutôt que de
- * l'espérer. Retirer ce jar retire cette intégration et RIEN D'AUTRE — c'est tout l'intérêt d'un
- * jar par intégration.
+ * <p>Its plugin.yml declares {@code depend: [VaniaMetrics, Multiverse-Core]}: both are
+ * required, and declaring it lets Bukkit guarantee load order instead of hoping for it.
+ * Removing this jar removes this integration and nothing else — that's the whole point of one
+ * jar per integration.
  */
 public final class MultiversePaper extends JavaPlugin {
 
-	private Collector collecteur;
+	private Collector collector;
 
 	@Override
 	public void onEnable() {
-		VaniaMetrics metriques = VaniaMetricsProvider.get();
-		collecteur = new MultiverseCollector();
-		metriques.enregistrer(collecteur);
+		VaniaMetrics metrics = VaniaMetricsProvider.get();
+		collector = new MultiverseCollector();
+		metrics.register(collector);
 	}
 
 	@Override
 	public void onDisable() {
-		if (collecteur != null) {
-			VaniaMetricsProvider.chercher().ifPresent(m -> m.retirer(collecteur));
+		if (collector != null) {
+			VaniaMetricsProvider.find().ifPresent(m -> m.unregister(collector));
 		}
 	}
 }
