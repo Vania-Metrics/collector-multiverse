@@ -6,7 +6,7 @@
 // Overrides, for the duration of one build:
 //   ./gradlew build -PvaniaCore.ref=main          a different core ref
 //   ./gradlew build -PvaniaCore.dir=../core       a local core (API development)
-rootProject.name = "colecteur-multiverse"
+rootProject.name = "collector-multiverse"
 
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
