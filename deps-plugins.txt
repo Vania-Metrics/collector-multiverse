@@ -1,0 +1,3 @@
+# Jars des plugins tiers dont ce collecteur dépend à la COMPILATION.
+# Une ligne par URL. Aucun jar tiers n'est embarqué dans le jar produit.
+https://cdn.modrinth.com/data/3wmN97b8/versions/YZ2Ji4IS/multiverse-core-5.8.1.jar
